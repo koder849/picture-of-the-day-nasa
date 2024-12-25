@@ -1,35 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import nasaLogo from "./assets/nasa-6.svg";
+import "./App.css";
+import axios from "axios";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [data, setData] = useState();
+
+  useEffect(() => {
+    const fetchNasaData = async () => {
+      const response = await axios.get(import.meta.env.VITE_NASA_API_URL, {
+        params: {
+          api_key: import.meta.env.VITE_NASA_API_KEY,
+        },
+      });
+      setData(response?.data);
+      console.log("Response :", response);
+    };
+    fetchNasaData();
+  }, []);
 
   return (
     <>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
+        <a href="https://www.nasa.gov/" target="_blank">
+          <img src={nasaLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>NASA Astronomy Pic of the Day</h1>
+      {data ? (
+        <>
+          <h2>{data.title}</h2>
+          <i>{data.date}</i>
+          <p>{data.explanation}</p>
+          <div className="card">
+            <img src={data.hdurl} alt="APOD" className="nasa-pic" />
+          </div>
+        </>
+      ) : (
+        <p>Loading ...</p>
+      )}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
